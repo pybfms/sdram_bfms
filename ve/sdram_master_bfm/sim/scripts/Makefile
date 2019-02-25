@@ -23,7 +23,7 @@ ifeq (vl,$(SIM))
   DPI_OBJS_LIBS += libgoogletest-hdl-vl.o libsdram_master_bfm_tb_vl.o
 endif
 
-DPI_OBJS_LIBS += $(GVM_OBJS_LIBS)
+DPI_OBJS_LIBS += $(GVM_OBJS_LIBS) libsdram_master_bfm.o
 DPI_OBJS_LIBS += libsdram_master_bfm_tests.o libgoogletest-hdl.o libgoogletest.o
 
 ifeq (ms,$(SIM))

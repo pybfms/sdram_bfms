@@ -26,7 +26,8 @@ include $(MK_INCLUDES)
 RULES := 1
 
 ifeq (true,$(PHASE2))
-build : 
+build : \
+	$(ROOT_DIR)/src-gen/sdram_master_bfm.d
 else
 build : $($(PROJECT)_deps)
 	$(Q)$(MAKE) -f $(SCRIPTS_DIR)/ivpm.mk PHASE2=true VERBOSE=$(VERBOSE) build
@@ -42,6 +43,11 @@ release : build
 	$(Q)cd $(ROOT_DIR)/build ; \
 		tar czf $(PROJECT)-$(version).tar.gz $(PROJECT)
 	$(Q)rm -rf $(ROOT_DIR)/build/$(PROJECT)
+
+$(ROOT_DIR)/src-gen/sdram_master_bfm.d : $(ROOT_DIR)/src/sdram_master_bfm.bid
+	$(Q)$(BFM_TOOLS)/bin/bfm-tools gen-ifc -o $(ROOT_DIR)/src-gen -force \
+		$(ROOT_DIR)/src/sdram_master_bfm.bid
+	$(Q)touch $@
 
 include $(MK_INCLUDES)
 

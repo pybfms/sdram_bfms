@@ -1,0 +1,14 @@
+#****************************************************************************
+#* sdram_master_bfm.bid
+#****************************************************************************
+{
+	"tasks": [
+		{ "name": "reset_ev", "type": "ack" },
+		{ "name": "load_modereg", "type": "req",
+		"parameters": [
+		  {"name": "mode", "type": "uint16_t"}
+		] },
+		# Generic command-acknowledge for now
+		{ "name": "cmdack", "type": "ack" }
+	]
+}
