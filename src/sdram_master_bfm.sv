@@ -46,6 +46,13 @@ interface sdram_master_bfm_core(
 	reg[63:0]					dq_o = 0;
 	reg[63:0]					dq_o_r = 0;
 	wire[63:0]					dq_i;
+	
+	reg[63:0]					dq_o_buf[7:0];
+	reg[31:0]					dqm_o_buf[7:0];
+	reg[63:0]					dq_o_buf_idx;
+	reg[63:0]					dq_o_buf_cnt;
+	reg[63:0]					dq_i_buf[7:0];
+	reg[63:0]					dq_i_buf_idx;
 	reg							cs_n = 1;
 	reg							cs_n_r = 1;
 	reg							ras_n = 1;
@@ -66,7 +73,7 @@ interface sdram_master_bfm_core(
 		cmd <= cmd_r;
 		addr <= addr_r;
 		bs <= bs_r;
-		dq_o <= dq_o_r;
+		dq_o <= dq_o_buf[dq_o_buf_idx];
 		cs_n <= cs_n_r;
 		ras_n <= ras_n_r;
 		cas_n <= cas_n_r;
@@ -91,6 +98,7 @@ interface sdram_master_bfm_core(
 			dqm_r = 0;
 			
 			cmd_r = 0;
+		end else begin
 		end
 		
 		if (cmd == 1) begin
@@ -98,6 +106,18 @@ interface sdram_master_bfm_core(
 		end
 	end
 
+	task sdram_master_bfm_nop();
+		cke_r = 1;
+		cs_n_r = 0;
+		ras_n_r = 1;
+		cas_n_r = 1;
+		we_n_r = 1;
+		dqm_r = 0;
+		bs_r = 0;
+		addr_r = 0;
+		cmd_r = 1;
+	endtask
+	
 	// Commands:
 	// precharge_all
 	// auto_refresh
@@ -114,21 +134,74 @@ interface sdram_master_bfm_core(
 		cmd_r = 1;
 	endtask
 	
+	task sdram_master_bfm_precharge_all_bank();
+		cke_r = 1;
+		cs_n_r = 0;
+		ras_n_r = 0;
+		cas_n_r = 1;
+		we_n_r = 0;
+		dqm_r = 0;
+		bs_r = 0;
+		addr_r = 1024;
+		cmd_r = 1;
+	endtask
+	
+	task sdram_master_bfm_auto_refresh();
+		cke_r = 1;
+		cs_n_r = 0;
+		ras_n_r = 0;
+		cas_n_r = 0;
+		we_n_r = 1;
+		dqm_r = 0;
+		bs_r = 0;
+		addr_r = 0;
+		cmd_r = 1;
+	endtask
+	
+	task sdram_master_bfm_active(
+		byte unsigned		bank,
+		int unsigned		row);
+		cke_r   = 1;
+		cs_n_r  = 0;
+		ras_n_r = 0;
+		cas_n_r = 1;
+		we_n_r  = 1;
+		dqm_r   = 0;
+		bs_r    = bank;
+		addr_r  = row;
+		cmd_r	= 1;
+	endtask
+	
+	function void sdram_master_bfm_set_dq(
+		int unsigned		idx,
+		longint unsigned	dq,
+		int unsigned		dqm);
+		dq_o_buf[idx] = dq;	
+		dqm_buf[idx] = dqm;	
+	endfunction
+	
+	task sdram_master_bfm_write(
+		byte unsigned		bank,
+		int unsigned		col,
+		int unsigned		dq_sz);
+		cke_r   = 1;
+		cs_n_r  = 0;
+		ras_n_r = 1;
+		cas_n_r = 0;
+		we_n_r  = 0;
+		dqm_r   = dqm;
+		bs_r    = bank;
+		addr_r  = col;
+		dq_o_r  = dq;	
+		cmd_r	= 1;
+	endtask
+	
+	
+	
 	// activate
 	// write (auto-precharge)
 	// read (auto-precharge)
 	
-	// nop
-	task sdram_master_bfm_nop();
-		cke_r = 1;
-		cs_n_r = 0;
-		ras_n_r = 1;
-		cas_n_r = 1;
-		we_n_r = 1;
-		dqm_r = 0;
-		cmd_r = 1;
-	endtask
-		
 	
 `include "sdram_master_bfm_api.svh"	
 

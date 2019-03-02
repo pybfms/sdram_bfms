@@ -4,9 +4,29 @@
 {
 	"tasks": [
 		{ "name": "reset_ev", "type": "ack" },
+		{ "name": "nop", "type": "req"},
 		{ "name": "load_modereg", "type": "req",
 		"parameters": [
 		  {"name": "mode", "type": "uint16_t"}
+		] },
+		{ "name": "precharge_all_bank", "type": "req" },
+		{ "name": "auto_refresh", "type": "req" },
+		{ "name": "active", "type": "req",
+		"parameters": [
+		  {"name": "bank", "type": "uint8_t"},
+		  {"name": "row", "type": "uint32_t"}
+		] },
+		{ "name": "set_dq", "type", "acc",
+		"parameters": [
+		  {"name": "idx", "type": "uint32_t"},
+		  {"name": "dq", "type": "uint64_t"},
+		  {"name": "dqm", "type": "uint32_t"}
+		] },
+		{ "name": "write", "type": "req",
+		"parameters": [
+		  {"name": "bank", "type": "uint8_t"},
+		  {"name": "column", "type": "uint32_t"},
+		  {"name": "dq_sz", "type": "uint32_t"}
 		] },
 		# Generic command-acknowledge for now
 		{ "name": "cmdack", "type": "ack" }

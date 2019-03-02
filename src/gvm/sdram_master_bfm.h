@@ -23,10 +23,30 @@ public:
 
     virtual void cmdack();
 
+    virtual void do_nop();
+
+    virtual void do_load_modereg(uint16_t mode);
+
+    virtual void do_precharge_all_bank();
+
+    virtual void do_auto_refresh();
+
+    virtual void do_active(uint8_t bank, uint32_t row);
+
+    virtual void do_write(
+    		uint8_t  bank,
+			uint32_t col,
+			uint64_t *dq,
+			uint8_t  *dqm,
+			uint32_t dq_sz);
+
 private:
     bool						m_is_reset;
     GvmMutex					m_is_reset_mutex;
     GvmCond						m_is_reset_cond;
+
+    GvmMutex					m_cmdack_mutex;
+    GvmCond						m_cmdack_cond;
 
 };
 

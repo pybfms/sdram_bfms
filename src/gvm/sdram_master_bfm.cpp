@@ -31,6 +31,68 @@ void sdram_master_bfm::reset_ev() {
 	m_is_reset_mutex.unlock();
 }
 
-void sdram_master_bfm::cmdack() {
+void sdram_master_bfm::do_nop() {
+	nop();
 
+	m_cmdack_mutex.lock();
+	m_cmdack_cond.wait(m_cmdack_mutex);
+	m_cmdack_mutex.unlock();
+}
+
+void sdram_master_bfm::do_load_modereg(uint16_t mode) {
+	fprintf(stdout, "--> load_modereg\n");
+	sdram_master_bfm_base::load_modereg(mode);
+
+	m_cmdack_mutex.lock();
+	m_cmdack_cond.wait(m_cmdack_mutex);
+	m_cmdack_mutex.unlock();
+	fprintf(stdout, "<-- load_modereg\n");
+}
+
+void sdram_master_bfm::do_precharge_all_bank() {
+	precharge_all_bank();
+
+	m_cmdack_mutex.lock();
+	m_cmdack_cond.wait(m_cmdack_mutex);
+	m_cmdack_mutex.unlock();
+}
+
+void sdram_master_bfm::do_auto_refresh() {
+	auto_refresh();
+
+	m_cmdack_mutex.lock();
+	m_cmdack_cond.wait(m_cmdack_mutex);
+	m_cmdack_mutex.unlock();
+}
+
+void sdram_master_bfm::do_active(uint8_t bank, uint32_t row) {
+	active(bank, row);
+
+	m_cmdack_mutex.lock();
+	m_cmdack_cond.wait(m_cmdack_mutex);
+	m_cmdack_mutex.unlock();
+}
+
+void sdram_master_bfm::do_write(
+		uint8_t 	bank,
+		uint32_t 	col,
+		uint64_t 	*dq,
+		uint8_t 	*dqm,
+		uint32_t	dq_sz) {
+	for (uint32_t i=0; i<dq_sz; i++) {
+		set_dq(i, dq[i], dqm[i]);
+	}
+	write(bank, col, dq_sz);
+
+	m_cmdack_mutex.lock();
+	m_cmdack_cond.wait(m_cmdack_mutex);
+	m_cmdack_mutex.unlock();
+}
+
+void sdram_master_bfm::cmdack() {
+	fprintf(stdout, "--> cmdack\n");
+	m_cmdack_mutex.lock();
+	m_cmdack_cond.notify();
+	m_cmdack_mutex.unlock();
+	fprintf(stdout, "<-- cmdack\n");
 }

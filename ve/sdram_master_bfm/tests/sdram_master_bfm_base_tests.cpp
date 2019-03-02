@@ -2,6 +2,7 @@
  * sdram_master_bfm_base_tests.cpp
  ****************************************************************************/
 #include "gtest/gtest.h"
+#include <stdio.h>
 #include "sdram_master_bfm_base_tests.h"
 #include "sdram_master_bfm.h"
 
@@ -29,6 +30,63 @@ TEST_F(sdram_master_bfm_base_tests, smoke) {
 	bfm->wait_reset();
 	fprintf(stdout, "<-- wait_reset\n");
 
-	GoogletestHdl::raiseObjection();
-	run();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_precharge_all_bank();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_auto_refresh();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_auto_refresh();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_load_modereg(50);
+	bfm->do_nop();
+
+	bfm->do_active(0, 0); // bank 0, col 0
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_write(0, 0, 100, 0);
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_write(0, 1, 101, 0);
+	bfm->do_write(0, 1, 102, 0);
+	bfm->do_write(0, 1, 103, 0);
+	bfm->do_write(0, 1, 104, 0);
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+	bfm->do_nop();
+
+//	GoogletestHdl::raiseObjection();
+//	run();
 }
